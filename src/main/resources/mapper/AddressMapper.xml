@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.edu.nju.seckill.dao.AddressMapper" >
+  <resultMap id="BaseResultMap" type="com.edu.nju.seckill.domain.Address" >
+    <id column="aid" property="aid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="postcode" property="postcode" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="receiver_name" property="receiverName" jdbcType="VARCHAR" />
+    <result column="receiver_phone" property="receiverPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <!-- 收货地址列表映射!-->
+  <resultMap id="GetAddressResult" type="com.edu.nju.seckill.domain.dto.GetAddressResult">
+    <id column="aid" property="aid" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="postcode" property="postcode" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="receiver_name" property="receiver_name" jdbcType="VARCHAR" />
+    <result column="receiver_phone" property="receiver_phone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    aid, uid, postcode, address, receiver_name, receiver_phone
+  </sql>
+  <select id="selectByPrimaryKey" resultType="com.edu.nju.seckill.domain.Address">
+    select 
+    <include refid="Base_Column_List" />
+    from address
+    where aid = #{aid}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from address
+    where aid = #{aid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.edu.nju.seckill.domain.Address" >
+    insert into address (aid, uid, postcode, 
+      address, receiver_name, receiver_phone
+      )
+    values (#{aid,jdbcType=INTEGER}, #{uid,jdbcType=BIGINT}, #{postcode,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{receiverName,jdbcType=VARCHAR}, #{receiverPhone,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.edu.nju.seckill.domain.Address" >
+    insert into address
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="aid != null" >
+        aid,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="postcode != null" >
+        postcode,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="receiverName != null" >
+        receiver_name,
+      </if>
+      <if test="receiverPhone != null" >
+        receiver_phone,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="aid != null" >
+        #{aid,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="postcode != null" >
+        #{postcode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null" >
+        #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverPhone != null" >
+        #{receiverPhone,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.edu.nju.seckill.domain.Address" >
+    update address
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="postcode != null" >
+        postcode = #{postcode,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverName != null" >
+        receiver_name = #{receiverName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiverPhone != null" >
+        receiver_phone = #{receiverPhone,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where aid = #{aid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.edu.nju.seckill.domain.Address" >
+    update address
+    set uid = #{uid,jdbcType=BIGINT},
+      postcode = #{postcode,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      receiver_name = #{receiverName,jdbcType=VARCHAR},
+      receiver_phone = #{receiverPhone,jdbcType=VARCHAR}
+    where aid = #{aid,jdbcType=INTEGER}
+  </update>
+  <insert id="addAddress">
+    insert into seckill.address(uid,postcode,address,receiver_name,receiver_phone)
+    values(#{uid},#{postcode},#{address},#{receiver_name},#{receiver_phone})
+  </insert>
+  <select id="getAddress" resultMap="GetAddressResult">
+    SELECT aid as aid,uid as uid,postcode as postcode , address as address, receiver_name as receiver_name,
+    receiver_phone as receiver_phone
+    FROM seckill.address
+    where uid=#{uid}
+  </select>
+  <update id="updateAddress">
+    update seckill.address
+    set postcode=#{postcode},address=#{address},receiver_name=#{receiver_name},receiver_phone=#{receiver_phone}
+    where aid=#{aid} and uid=#{uid}
+  </update>
+  <delete id="deleteAddress">
+    delete from seckill.address
+    where aid=#{aid} and uid =#{uid}
+  </delete>
+  <select id="isBelongToCurrentUser" resultType="java.lang.Integer">
+    select count(*)
+    from address
+    where aid=#{aid} and uid=#{uid}
+  </select>
+  <update id="updateDefaultAddress">
+    update user
+    set address_id = #{aid}
+    where uid=#{uid}
+  </update>
+  <select id="selectAddress" resultType="com.edu.nju.seckill.domain.Address">
+    select
+    <include refid="Base_Column_List"></include>
+    from address
+    where aid = #{aid} and uid = #{uid}
+  </select>
+</mapper>

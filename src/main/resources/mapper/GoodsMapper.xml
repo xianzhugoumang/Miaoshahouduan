@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.edu.nju.seckill.dao.GoodsMapper">
+    <resultMap id="BaseResultMap" type="com.edu.nju.seckill.domain.Goods">
+        <id column="gid" property="gid" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="DOUBLE"/>
+        <result column="nid" property="nid" jdbcType="INTEGER"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="count" property="count" jdbcType="INTEGER"/>
+        <result column="display_time" property="displayTime" jdbcType="TIMESTAMP"/>
+        <result column="recommend" property="recommend" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <resultMap id="CarouselItems" type="com.edu.nju.seckill.domain.dto.CarouselItems">
+        <id column="gid" property="goods_id" jdbcType="BIGINT"/>
+        <result column="image" property="imgUrl" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="GoodsListResult" type="com.edu.nju.seckill.domain.dto.GoodsListResult">
+        <id column="gid" property="gid" jdbcType="BIGINT"/>
+        <result column="name" property="goods_name" jdbcType="VARCHAR"/>
+        <result column="description" property="desc" jdbcType="VARCHAR"/>
+        <result column="price" property="goods_price" jdbcType="DOUBLE"/>
+        <result column="image" property="imgUrl" jdbcType="VARCHAR"/>
+        <result column="salecount" property="count" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="GoodsDetailResult" type="com.edu.nju.seckill.domain.dto.GoodsDetailResult">
+        <id column="gid" property="gid" jdbcType="BIGINT"/>
+        <result column="name" property="goods_name" jdbcType="VARCHAR"/>
+        <result column="price" property="goods_price" jdbcType="DOUBLE"/>
+        <result column="description" property="desc" jdbcType="VARCHAR"/>
+        <result column="image" property="imgurl" jdbcType="VARCHAR"/>
+        <result column="count" property="count" jdbcType="INTEGER"/>
+        <result column="display_time" property="displaytime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--    searchGoodsForIndex 商品搜索列表 首页分类用-->
+    <resultMap id="SearchGoodsForIndex" type="com.edu.nju.seckill.domain.dto.GoodsSearchResult">
+        <result column="name" property="type_zh" jdbcType="VARCHAR"/>
+        <result column="type" property="type_en" jdbcType="VARCHAR"/>
+        <collection property="list" ofType="com.edu.nju.seckill.domain.dto.GoodsSearchList">
+            <id column="gid" property="goods_id" jdbcType="BIGINT"/>
+            <result column="names" property="goods_name" jdbcType="VARCHAR"/>
+            <result column="price" property="goods_price" jdbcType="DOUBLE"/>
+            <result column="description" property="goods_desc" jdbcType="VARCHAR"/>
+            <result column="image" property="imgUrl" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+    <sql id="Base_Column_List">
+    gid, name, price, nid, description, image, count, display_time
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from goods
+        where gid = #{gid,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from goods
+    where gid = #{gid,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.edu.nju.seckill.domain.Goods">
+    insert into goods (gid, name, price, 
+      nid, description, image, 
+      count, display_time)
+    values (#{gid,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
+      #{nid,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{image,jdbcType=VARCHAR}, 
+      #{count,jdbcType=INTEGER}, #{displayTime,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.edu.nju.seckill.domain.Goods">
+        insert into goods
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="gid != null">
+                gid,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="nid != null">
+                nid,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="image != null">
+                image,
+            </if>
+            <if test="count != null">
+                count,
+            </if>
+            <if test="displayTime != null">
+                display_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="gid != null">
+                #{gid,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="nid != null">
+                #{nid,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="image != null">
+                #{image,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=INTEGER},
+            </if>
+            <if test="displayTime != null">
+                #{displayTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.edu.nju.seckill.domain.Goods">
+        update goods
+        <set>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=DOUBLE},
+            </if>
+            <if test="nid != null">
+                nid = #{nid,jdbcType=INTEGER},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="image != null">
+                image = #{image,jdbcType=VARCHAR},
+            </if>
+            <if test="count != null">
+                count = #{count,jdbcType=INTEGER},
+            </if>
+            <if test="displayTime != null">
+                display_time = #{displayTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where gid = #{gid,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.edu.nju.seckill.domain.Goods">
+    update goods
+    set name = #{name,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      nid = #{nid,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      count = #{count,jdbcType=INTEGER},
+      display_time = #{displayTime,jdbcType=TIMESTAMP}
+    where gid = #{gid,jdbcType=BIGINT}
+  </update>
+    <select id="selectHotProductCarousel" resultMap="CarouselItems">
+    select gid, image
+    from goods
+    where goods.recommend = 2
+    order by gid desc limit 5
+  </select>
+    <select id="getGoodsList" resultMap="GoodsListResult">
+        SELECT c.*
+        FROM (
+        SELECT
+        <choose>
+            <when test="orderby == 'salecount'">
+                SUM(o.count) as salecount,
+            </when>
+            <otherwise>
+                IFNULL(NULL,0) as salecount,
+            </otherwise>
+        </choose>
+         g.gid, g.`name`, g.price, g.description, g.image
+        FROM goods as g
+        <if test="typeName neq 'all'">
+            ,navigation as n
+        </if>
+        <if test="orderby == 'salecount'">
+            , `order` as o
+        </if>
+        <where>
+        <if test="typeName neq 'all'">
+            and n.type = #{typeName} and n.nid = g.nid
+        </if>
+        <if test="orderby == 'salecount'">
+            and g.gid = o.gid
+        </if>
+        <if test="keyword != null">
+            and (g.`name` like CONCAT('%', #{keyword}, '%') or g.description like CONCAT('%', #{keyword}, '%'))
+        </if>
+        </where>
+        <if test="orderby == 'salecount'">
+            GROUP BY o.gid
+        </if>
+        UNION
+        SELECT IFNULL(NULL,0) as salecount, g.gid, g.`name`, g.price, g.description, g.image
+        FROM goods as g
+        <if test="typeName neq 'all'">
+            ,navigation as n
+        </if>
+        <where>
+        g.gid NOT IN (SELECT o.gid FROM `order` as o)
+        <if test="typeName neq 'all'">
+            and n.type = #{typeName} and n.nid = g.nid
+        </if>
+        <if test="keyword != null">
+            and (g.`name` like CONCAT('%', #{keyword}, '%') or g.description like CONCAT('%', #{keyword}, '%'))
+        </if>
+        </where>
+        ) as c
+        <choose>
+            <when test="orderby == 'salecount'">
+                ORDER BY c.salecount desc
+            </when>
+            <when test="orderby == 'price'">
+                ORDER BY c.price desc
+            </when>
+            <otherwise>
+                ORDER BY c.gid
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getGoodDetail" resultMap="GoodsDetailResult">
+        SELECT gid, `name`, price, description, image, `count`, display_time
+        FROM goods
+        WHERE gid = #{gid}
+    </select>
+
+    <!--每个类型下的商品最多5个-->
+    <select id="searchGoodsForIndex" resultMap="SearchGoodsForIndex">
+        select good.gid, good.name as `names`, good.price, good.image, good.description, nav.type, nav.name
+        from
+            (select gid, `name`, price, description, image, nid
+                from goods
+                <where>
+                    <if test="keyword != null">
+                        `name` like CONCAT('%',#{keyword},'%') or description like CONCAT('%',#{keyword},'%')
+                    </if>
+                </where>
+            ) as good, navigation as nav
+        where nav.nid = good.nid
+    </select>
+    <select id="getGoodsIndexTips" resultType="java.lang.String">
+        select `name` from goods
+        <where>
+            <if test="keyword != null">
+                `name` like CONCAT('%',#{keyword},'%')
+            </if>
+        </where>
+        limit 8
+    </select>
+
+    <update id="updateGoodsCount">
+        update goods set `count` = `count` - #{num}
+        where gid = #{gid} and `count` >= #{num}
+    </update>
+</mapper>

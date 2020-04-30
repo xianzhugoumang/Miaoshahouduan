@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.edu.nju.seckill.dao.SeckillGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.edu.nju.seckill.domain.SeckillGoods" >
+    <id column="sgid" property="sgid" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DOUBLE" />
+    <result column="seckill_price" property="seckillPrice" jdbcType="DOUBLE" />
+    <result column="nav_name" property="navName" jdbcType="VARCHAR" />
+    <result column="nav_type" property="navType" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="image" property="image" jdbcType="VARCHAR" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+    <result column="remain_count" property="remainCount" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="display_time" property="displayTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+<!--  秒杀商品列表结果映射-->
+  <resultMap id="SeckillGoodsList" type="com.edu.nju.seckill.domain.dto.SeckillGoodsList">
+    <id column="start_time" property="startTime"></id>
+    <id column="end_time" property="endTime"></id>
+    <collection property="seckillGoodsList" ofType="com.edu.nju.seckill.domain.dto.SeckillGoodsResult">
+      <id property="sgid" column="sgid"></id>
+      <result property="goods_name" column="name"></result>
+      <result property="desc" column="description"></result>
+      <result property="goods_price" column="price"></result>
+      <result property="seckill_price" column="seckill_price"></result>
+      <result property="imgUrl" column="image"></result>
+      <result property="count" column="count"></result>
+      <result property="remain_count" column="remain_count"></result>
+    </collection>
+  </resultMap>
+
+  <resultMap id="LatestSeckillGoodsList" type="com.edu.nju.seckill.domain.dto.SeckillGoodsList">
+    <id column="start_time" property="startTime"></id>
+    <result column="end_time" property="endTime"></result>
+    <collection property="seckillGoodsList" ofType="com.edu.nju.seckill.domain.dto.SeckillGoodsResult">
+      <id property="sgid" column="sgid"></id>
+      <result property="goods_name" column="name"></result>
+      <result property="desc" column="description"></result>
+      <result property="goods_price" column="price"></result>
+      <result property="seckill_price" column="seckill_price"></result>
+      <result property="imgUrl" column="image"></result>
+      <result property="count" column="count"></result>
+      <result property="remain_count" column="remain_count"></result>
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    sgid, name, price,seckill_price, nav_name, nav_type, description, image, count, remain_count, start_time,
+    end_time, display_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from seckill_goods
+    where sgid = #{sgid,jdbcType=BIGINT}
+  </select>
+  <select id="selectSeckillList" resultType="com.edu.nju.seckill.domain.dto.SeckillGoodsList" resultMap="SeckillGoodsList">
+    select start_time,end_time,sgid,name,description,price,image,count,remain_count, seckill_price
+    from seckill_goods
+    where end_time > now()
+    group by start_time,end_time,sgid,name,description,price,image,count,remain_count;
+  </select>
+    <select id="selectLatest" resultType="com.edu.nju.seckill.domain.dto.SeckillGoodsList" resultMap="LatestSeckillGoodsList">
+      select *
+      from seckill_goods
+      where start_time &lt;= (select now()) and end_time>(select now())
+      limit 5
+    </select>
+  <select id="selectFuture" resultType="com.edu.nju.seckill.domain.dto.SeckillGoodsList" resultMap="LatestSeckillGoodsList">
+    select *
+    from seckill_goods as A,(select  min(start_time) start_time from seckill_goods where start_time>(select now())) as B
+    where A.start_time=B.start_time
+    limit 5
+  </select>
+
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from seckill_goods
+    where sgid = #{sgid,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.edu.nju.seckill.domain.SeckillGoods" >
+    insert into seckill_goods (sgid, name, price, 
+      nav_name, nav_type, description, 
+      image, count, remain_count, 
+      start_time, end_time, display_time
+      )
+    values (#{sgid,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{price,jdbcType=DOUBLE}, 
+      #{navName,jdbcType=VARCHAR}, #{navType,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{image,jdbcType=VARCHAR}, #{count,jdbcType=INTEGER}, #{remainCount,jdbcType=INTEGER}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{endTime,jdbcType=TIMESTAMP}, #{displayTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.edu.nju.seckill.domain.SeckillGoods" >
+    insert into seckill_goods
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+        sgid,name,price,nav_name,nav_type,
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="image != null" >
+        image,
+      </if>
+        count,remain_count,
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="displayTime != null" >
+        display_time,
+      </if>
+
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+        #{sgid,jdbcType=BIGINT},
+        #{name,jdbcType=VARCHAR},
+        #{price,jdbcType=DOUBLE},
+        #{navName,jdbcType=VARCHAR},
+        #{navType,jdbcType=VARCHAR},
+
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        #{image,jdbcType=VARCHAR},
+      </if>
+
+        #{count,jdbcType=INTEGER},
+        #{remainCount,jdbcType=INTEGER},
+
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="displayTime != null" >
+        #{displayTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.edu.nju.seckill.domain.SeckillGoods" >
+    update seckill_goods
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DOUBLE},
+      </if>
+      <if test="navName != null" >
+        nav_name = #{navName,jdbcType=VARCHAR},
+      </if>
+      <if test="navType != null" >
+        nav_type = #{navType,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="image != null" >
+        image = #{image,jdbcType=VARCHAR},
+      </if>
+      <if test="count != null" >
+        count = #{count,jdbcType=INTEGER},
+      </if>
+      <if test="remainCount != null" >
+        remain_count = #{remainCount,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="displayTime != null" >
+        display_time = #{displayTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where sgid = #{sgid,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.edu.nju.seckill.domain.SeckillGoods" >
+    update seckill_goods
+    set name = #{name,jdbcType=VARCHAR},
+      price = #{price,jdbcType=DOUBLE},
+      nav_name = #{navName,jdbcType=VARCHAR},
+      nav_type = #{navType,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      image = #{image,jdbcType=VARCHAR},
+      count = #{count,jdbcType=INTEGER},
+      remain_count = #{remainCount,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      display_time = #{displayTime,jdbcType=TIMESTAMP}
+    where sgid = #{sgid,jdbcType=BIGINT}
+  </update>
+    <update id="updateRemainCountBySgid">
+      update seckill_goods
+      set remain_count = #{remainCount,jdbcType=INTEGER}
+      where sgid = #{sgid,jdbcType=BIGINT}
+    </update>
+
+  <select id="getSecKillDetail" resultType="com.edu.nju.seckill.domain.dto.SecKillGoodsDetail">
+      SELECT sgid, `name`, price, seckill_price, description, image, `count`,
+          remain_count, start_time, end_time, display_time
+      FROM seckill_goods
+      WHERE sgid = #{sgid}
+  </select>
+</mapper>
