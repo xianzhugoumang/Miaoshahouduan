@@ -14,6 +14,7 @@ public enum ResultCode implements IErrorCode {
     UNAUTHORIZED(401, "暂未登录或token已经过期"),
     FORBIDDEN(403, "没有相关权限"),
     FORBIDDEN2(403, "没有相关权限"),
+    FORBIDDEN3(403, "没有相关权限"),
     /**
      * 1000 - 1999 参数相关错误
      */
