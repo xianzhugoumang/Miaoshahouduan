@@ -8,6 +8,6 @@ package com.edu.nju.seckill.common;
  */
 public interface IErrorCode {
     long getCode();
-
+    long getCode2();
     String getMessage();
 }
