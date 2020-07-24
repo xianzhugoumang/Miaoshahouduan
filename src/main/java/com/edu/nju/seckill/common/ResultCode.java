@@ -22,7 +22,7 @@ public enum ResultCode implements IErrorCode {
     FORBIDDEN8(403, "没有相关权限"),
     FORBIDDEN9(403, "没有相关权限"),
     FORBIDDEN10(403, "没有相关权限"),
-
+    FORBIDDEN11(403, "没有相关权限"),
     /**
      * 1000 - 1999 参数相关错误
      */
