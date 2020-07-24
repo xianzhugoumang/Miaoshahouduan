@@ -12,6 +12,7 @@ public class CommonResult<T> {
 
     private T data;
     private T data2;
+    private T data3;
     protected CommonResult() {
     }
 
