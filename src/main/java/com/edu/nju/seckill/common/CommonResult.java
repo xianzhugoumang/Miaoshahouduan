@@ -9,8 +9,9 @@ package com.edu.nju.seckill.common;
 public class CommonResult<T> {
     private long code;
     private String message;
-    private T data;
 
+    private T data;
+    private T data2;
     protected CommonResult() {
     }
 
