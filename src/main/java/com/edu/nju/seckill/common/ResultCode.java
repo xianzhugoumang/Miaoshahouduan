@@ -24,6 +24,7 @@ public enum ResultCode implements IErrorCode {
     FORBIDDEN10(403, "没有相关权限"),
     FORBIDDEN11(403, "没有相关权限"),
     FORBIDDEN12(403, "没有相关权限"),
+    FORBIDDEN13(403, "没有相关权限"),
     /**
      * 1000 - 1999 参数相关错误
      */
@@ -63,6 +64,11 @@ public enum ResultCode implements IErrorCode {
     @Override
     public long getCode() {
         return code;
+    }
+
+    @Override
+    public long getCode2() {
+        return 0;
     }
 
     @Override
